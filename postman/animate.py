@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-from postman.objects import Postman, House, BusPassenger
-from postman.linear import LinearBusRouteModel
+from postman.objects import Postman, House, Letters
+from postman.linear import LinearPostmanModel
 
 
 def animate_model(model):

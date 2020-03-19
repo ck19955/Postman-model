@@ -1,9 +1,9 @@
 import random
-from postman.objects import House, Postman, BusPassenger, BusNetwork
+from postman.objects import House, Postman, Letters, RoadNetwork
 import numpy as np
 
 
-class LinearBusRouteModel(BusNetwork):
+class LinearPostmanModel(RoadNetwork):
     """Linear bus route with stops and buses
 
     Parameters
@@ -56,7 +56,7 @@ class LinearBusRouteModel(BusNetwork):
         This shows that at the start of the simulation Sally boards the number
         56 bus.
         """
-        self.passenger_num = 0
+        self.letter_num = 0
 
         events = []
         return events
@@ -66,18 +66,18 @@ class LinearBusRouteModel(BusNetwork):
         WaitingTimes = []
         BusCapacities = []
         for bus in self.buses:
-            for passenger in bus.passengers:
-                passenger.update_journey_time()
+            for letter in bus.letters:
+                letter.update_journey_time()
             BusEvents, JourneyTimes, BusWaitingTimes = self.update_bus(bus)
             for item in BusWaitingTimes:
                 WaitingTimes.append(item)
             events += BusEvents
-            BusCapacities.append(len(bus.passengers))
+            BusCapacities.append(len(bus.letters))
 
         for stop in self.stops:
             events += self.update_stop(stop)
-            for passenger in stop.passengers:
-                passenger.update_waiting_time()
+            for letter in stop.letters:
+                letter.update_waiting_time()
 
 
 
@@ -119,31 +119,31 @@ class LinearBusRouteModel(BusNetwork):
 
         original_speed = bus.speed
         # Passengers get off if this is their stop
-        staying_passengers = []
-        leaving_passengers = []
-        for passenger in bus.passengers:
-            if passenger.destination == stop.name:
-                leaving_passengers.append(passenger)
+        staying_letters = []
+        leaving_letters = []
+        for letter in bus.letters:
+            if letter.destination == stop.name:
+                leaving_letters.append(letter)
                 bus.speed = 0
             else:
-                staying_passengers.append(passenger)
+                staying_letters.append(letter)
         bus.speed = original_speed
         # All passengers waiting at the bus stop get on
-        waiting_passengers = stop.passengers
-        boarding_passengers = []
-        bus.passengers = boarding_passengers + staying_passengers
+        waiting_letters = stop.letters
+        boarding_letters = []
+        bus.letters = boarding_letters + staying_letters
         # Actually update passengers at bus and stop
-        for passenger in waiting_passengers:
-            if len(bus.passengers) < 40 and passenger.direction == bus.direction:
-                boarding_passengers.append(passenger)
-                bus.passengers = boarding_passengers + staying_passengers
+        for letter in waiting_letters:
+            if len(bus.letters) < 40 and letter.direction == bus.direction:
+                boarding_letters.append(letter)
+                bus.letters = boarding_letters + staying_letters
                 bus.speed = 0
 
         bus.speed = original_speed
         JourneyTimes = []
         WaitingTimes = []
-        for passenger in boarding_passengers:
-            waiting_passengers.remove(passenger)
+        for passenger in boarding_letters:
+            waiting_letters.remove(letter)
         # Record events for everyone getting on and off
         events = []
 

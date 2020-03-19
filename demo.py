@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from postman.objects import BusPassenger, Postman, House
-from postman.linear import LinearBusRouteModel
+from postman.objects import Letters, Postman, House
+from postman.linear import LinearPostmanModel
 from postman.animate import animate_model
 
 NumHouses = 10
@@ -11,7 +11,7 @@ Mail = []
 
 for i in range(1,MailPerHouse+1):
     for i in range(1,NumHouses+1):
-        Mail.append(BusPassenger('Cart', 'House ' + str(i)))
+        Mail.append(Letters('Cart', 'House ' + str(i)))
 
 Houses = []
 HouseSpacing = RoadLength/NumHouses
@@ -23,6 +23,6 @@ postman = [
     Postman('Postman', (0,0), 1, Mail, 1.0),
 ]
 
-model = LinearBusRouteModel(0, RoadLength, Houses, postman)
+model = LinearPostmanModel(0, RoadLength, Houses, postman)
 
 animate_model(model)
