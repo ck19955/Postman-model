@@ -125,7 +125,6 @@ class LinearBusRouteModel(BusNetwork):
             if passenger.destination == stop.name:
                 leaving_passengers.append(passenger)
                 bus.speed = 0
-                # time.sleep(0.25)
             else:
                 staying_passengers.append(passenger)
         bus.speed = original_speed

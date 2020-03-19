@@ -47,14 +47,13 @@ class BusPassenger(Printable):
         >>> dave.name
         'Dave'
     """
-    parameters = 'name', 'source', 'destination'
+    parameters = 'source', 'destination'
 
-    def __init__(self, name, source, destination):
+    def __init__(self, source, destination):
 
-        if not all(isinstance(p, str) for p in (name, source, destination)):
-            raise TypeError('name, source and destination should be strings')
+        if not all(isinstance(p, str) for p in (source, destination)):
+            raise TypeError('source and destination should be strings')
 
-        self.name = name
         self.source = source
         self.destination = destination
         self.waitingtime = 0
