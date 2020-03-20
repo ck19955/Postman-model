@@ -84,8 +84,6 @@ class LinearPostmanModel(RoadNetwork):
 
         JourneyTimes = []
         WaitingTimes = []
-        for passenger in boarding_letters:
-            waiting_letters.remove(passenger)
         # Record events for everyone getting on and off
         events = []
 
