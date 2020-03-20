@@ -4,58 +4,8 @@ import numpy as np
 
 
 class LinearPostmanModel(RoadNetwork):
-    """Linear bus route with stops and buses
-
-    Parameters
-    ==========
-
-    start: int, coordinate of start of the route
-    end: int, coordinate of end of the route
-    stops: list[BusStop], list of bus stops
-    buses: list[Bus], list of the buses on the route
-    rates: dict[str,float] (optional) rates of passengers arriving
-
-    A LinearBusRoute instances holds a complete model of the state of all
-    buses, bus stops and passengers along its route.
-
-    Examples
-    ========
-
-    First create passengers, buses and bus stops:
-
-        >>> dave = BusPassenger('Dave', 'West St', 'East St')
-        >>> joan = BusPassenger('Joan', 'West St', 'East St')
-        >>> bus = Bus('Number 47', (20, 0), 1, [dave])
-        >>> busstops = [BusStop('West St', (0, 100), [joan]),
-        ...             BusStop('East St', (100, 100), [])]
-
-    Finally we are ready to create a complete linear bus route model with two
-    stops and one bus:
-
-        >>> model = LinearBusRouteModel(0, 100, busstops, [bus])
-
-    This model has a route going from coordinate 0 to 100 with a bus stop at
-    each end. There are two passengers Dave and Joan both wanting to go from
-    East St to West St. Joan is waiting at the West St bus stop. Dave is on
-    the bus which is already heading to East St and is currently at
-    coordinate 20.
-    """
 
     def init(self):
-        """Initialise the model and return initial events.
-
-        Computes and returns the initial events of the simulation e.g.
-
-            >>> sally = BusPassenger('Sally', 'West St', 'East St')
-            >>> bus = Bus('56', (0, 0), 1, [sally])
-            >>> model = LinearBusRouteModel(0, 100, [], [bus])
-            >>> events = model.init()
-            >>> events
-            [('boards', 'Sally', '56')]
-
-        This shows that at the start of the simulation Sally boards the number
-        56 bus.
-        """
         self.letter_num = 0
 
         events = []
@@ -119,31 +69,23 @@ class LinearPostmanModel(RoadNetwork):
 
         original_speed = bus.speed
         # Passengers get off if this is their stop
-        staying_letters = []
+        remaining_letters = []
         leaving_letters = []
         for letter in bus.letters:
             if letter.destination == stop.name:
                 leaving_letters.append(letter)
                 bus.speed = 0
             else:
-                staying_letters.append(letter)
+                remaining_letters.append(letter)
         bus.speed = original_speed
         # All passengers waiting at the bus stop get on
-        waiting_letters = stop.letters
-        boarding_letters = []
-        bus.letters = boarding_letters + staying_letters
-        # Actually update passengers at bus and stop
-        for letter in waiting_letters:
-            if len(bus.letters) < 40 and letter.direction == bus.direction:
-                boarding_letters.append(letter)
-                bus.letters = boarding_letters + staying_letters
-                bus.speed = 0
 
-        bus.speed = original_speed
+        bus.letters = remaining_letters
+
         JourneyTimes = []
         WaitingTimes = []
         for passenger in boarding_letters:
-            waiting_letters.remove(letter)
+            waiting_letters.remove(passenger)
         # Record events for everyone getting on and off
         events = []
 

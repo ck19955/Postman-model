@@ -4,7 +4,7 @@ from postman.linear import LinearPostmanModel
 from postman.animate import animate_model
 
 NumHouses = 10
-MailPerHouse = 2
+MailPerHouse = 1
 RoadLength = 100
 
 Mail = []
