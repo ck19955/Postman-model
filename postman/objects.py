@@ -131,14 +131,49 @@ class Postman(Printable):
         # Return the patches for matplotlib to update
         return [self.bus_line, self.letters_line, self.text]
 
+class Trolley(Printable):
+    
+    parameters = 'position', 'letters'
+    def init(self, position, letters):
+        if not (isinstance(position, tuple) and len(position) == 2 and
+                all(isinstance(c, int) for c in position)):
+            raise TypeError('position should be a pair of ints')
+        if not all(isinstance(p, Letters) for p in letters):
+            raise TypeError('letters should be a list of Letters')
+        self.position = position
+        self.letters = list(letters)
+        
+    def init_animation(self, ax):
+        self.cart_line, = ax.plot([], [], 'rs', markersize=10)
+        self.letters_line, = ax.plot([], [], 'bo')
+        x, y = self.position
+        self.text = ax.text(x, y+3, "cart",
+                verticalalignment='bottom', horizontalalignment='center')
+        return [self.cart_line, self.letters_line, self.text]
+
+    def update_animation(self):
+        x, y = self.position
+        self.cart_line.set_data([x], [y])
+        # Redraw the passengers
+        pspace = 2
+        num_letters = len(self.letters)
+        xdata = [x] * num_letters
+        ydata = [y - pspace*(n+1) for n in range(num_letters)]
+        self.letters_line.set_data(xdata, ydata)
+        # Update text position
+        self.text.set_x(x)
+        self.text.set_y(y+3)
+        # Return the patches for matplotlib to update
+        return [self.cart_line, self.letters_line, self.text]
+
 
 class RoadNetwork(Printable):
 
-    def __init__(self, start, end, stops, buses):
+    def __init__(self, start, end, houses, postmen):
         self.start = start
         self.end = end
-        self.stops = list(stops)
-        self.buses = list(buses)
+        self.houses = list(houses)
+        self.postmen = list(postmen)
 
     def init(self):
         """Initialise the model after creating nand return events"""
@@ -155,12 +190,12 @@ class RoadNetwork(Printable):
         patches = self._init_animation(ax)
 
         # Initialise all buses
-        for bus in self.buses:
-            patches += bus.init_animation(ax)
+        for postman in self.postmen:
+            patches += postman.init_animation(ax)
 
         # Initialise all bus stops
-        for stop in self.stops:
-            patches += stop.init_animation(ax)
+        for house in self.houses:
+            patches += house.init_animation(ax)
 
         # List of patches for matplotlib to update
         return patches
@@ -172,12 +207,12 @@ class RoadNetwork(Printable):
         patches = self._update_animation()
 
         # Redraw bus stops
-        for stop in self.stops:
-            patches += stop.update_animation()
+        for house in self.houses:
+            patches += house.update_animation()
 
         # Redraw buses
-        for bus in self.buses:
-            patches += bus.update_animation()
+        for postman in self.postmen:
+            patches += postman.update_animation()
 
         # List of patches for matplotlib to update
         return patches

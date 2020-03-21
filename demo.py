@@ -20,7 +20,7 @@ for i in range(1,NumHouses+1):
 
 
 postman = [
-    Postman('Postman', (0,0), 1, Mail, 1.0),
+    Postman('Postman', (50,0), 1, Mail, 1.0),
 ]
 
 model = LinearPostmanModel(0, RoadLength, Houses, postman)

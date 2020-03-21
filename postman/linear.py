@@ -15,33 +15,33 @@ class LinearPostmanModel(RoadNetwork):
         events = []
         WaitingTimes = []
         BusCapacities = []
-        for bus in self.buses:
-            for letter in bus.letters:
+        for postman in self.postmen:
+            for letter in postman.letters:
                 letter.update_journey_time()
-            BusEvents, JourneyTimes, BusWaitingTimes = self.update_bus(bus)
+            BusEvents, JourneyTimes, BusWaitingTimes = self.update_postman(postman)
             for item in BusWaitingTimes:
                 WaitingTimes.append(item)
             events += BusEvents
-            BusCapacities.append(len(bus.letters))
+            BusCapacities.append(len(postman.letters))
 
-        for stop in self.stops:
-            events += self.update_stop(stop)
-            for letter in stop.letters:
+        for house in self.houses:
+            events += self.update_house(house)
+            for letter in house.letters:
                 letter.update_waiting_time()
 
 
 
         return events, WaitingTimes, JourneyTimes, BusCapacities
 
-    def update_bus(self, bus):
+    def update_postman(self, postman):
         """Update simulation state of bus."""
 
         # Assume all buses have speed 1 (needs to be an int)
 
-        old_x, old_y = bus.position
-        new_x = old_x + bus.speed * bus.direction
+        old_x, old_y = postman.position
+        new_x = old_x + postman.speed * postman.direction
         new_y = old_y  # Buses move horizontally
-        bus.position = (new_x, old_y)
+        postman.position = (new_x, old_y)
 
         events = []
         JourneyTimes = []
@@ -49,38 +49,38 @@ class LinearPostmanModel(RoadNetwork):
 
 
         # Does the bus stop at any stops?
-        for stop in self.stops:
-            stop_x, stop_y = stop.position
-            if old_x < stop_x <= new_x or old_x > stop_x >= new_x:
-                StopEvents, StepJourneyTimes, WaitingTimes = self.stop_at(bus, stop)
+        for house in self.houses:
+            house_x, house_y = house.position
+            if old_x < house_x <= new_x or old_x > house_x >= new_x:
+                StopEvents, StepJourneyTimes, WaitingTimes = self.stop_at(postman, house)
                 for item in StepJourneyTimes:
                     JourneyTimes.append(item)
                 events += StopEvents
 
         # Does the bus turn around?
         if not (self.start <= new_x <= self.end):
-            bus.direction = - bus.direction
-            events.append(('turns', bus.name))
+            postman.direction = - postman.direction
+            events.append(('turns', postman.name))
 
         return events, JourneyTimes, WaitingTimes
 
-    def stop_at(self, bus, stop):
+    def stop_at(self, postman, house):
         """Handle bus stopping at stop."""
 
-        original_speed = bus.speed
+        original_speed = postman.speed
         # Passengers get off if this is their stop
         remaining_letters = []
         leaving_letters = []
-        for letter in bus.letters:
-            if letter.destination == stop.name:
+        for letter in postman.letters:
+            if letter.destination == house.name:
                 leaving_letters.append(letter)
-                bus.speed = 0
+                postman.speed = 0
             else:
                 remaining_letters.append(letter)
-        bus.speed = original_speed
+        postman.speed = original_speed
         # All passengers waiting at the bus stop get on
 
-        bus.letters = remaining_letters
+        postman.letters = remaining_letters
 
         JourneyTimes = []
         WaitingTimes = []
@@ -89,7 +89,7 @@ class LinearPostmanModel(RoadNetwork):
 
         return events, JourneyTimes, WaitingTimes
 
-    def update_stop(self, stop):
+    def update_house(self, house):
         """Update bus stop"""
 
         # New passengers arrive randomly at each bus stop. The probability of
