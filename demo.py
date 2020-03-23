@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from postman.objects import Letters, Postman, House
+from postman.objects import Letters, Postman, House, Cart
 from postman.linear import LinearPostmanModel
 from postman.animate import animate_model
 
@@ -20,9 +20,13 @@ for i in range(1,NumHouses+1):
 
 
 postman = [
-    Postman('Postman', (50,0), 1, Mail, 1.0),
+    Postman('Postman', (50,0), 1, [], 1.0),
 ]
 
-model = LinearPostmanModel(0, RoadLength, Houses, postman)
+cart = [
+    Cart((0,0), Mail)
+]
+
+model = LinearPostmanModel(0, RoadLength, Houses, postman, cart)
 
 animate_model(model)

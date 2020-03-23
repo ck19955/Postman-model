@@ -131,10 +131,11 @@ class Postman(Printable):
         # Return the patches for matplotlib to update
         return [self.bus_line, self.letters_line, self.text]
 
-class Trolley(Printable):
+class Cart(Printable):
     
     parameters = 'position', 'letters'
-    def init(self, position, letters):
+    
+    def __init__(self, position, letters):
         if not (isinstance(position, tuple) and len(position) == 2 and
                 all(isinstance(c, int) for c in position)):
             raise TypeError('position should be a pair of ints')
@@ -169,11 +170,12 @@ class Trolley(Printable):
 
 class RoadNetwork(Printable):
 
-    def __init__(self, start, end, houses, postmen):
+    def __init__(self, start, end, houses, postmen, carts):
         self.start = start
         self.end = end
         self.houses = list(houses)
         self.postmen = list(postmen)
+        self.carts = list(carts)
 
     def init(self):
         """Initialise the model after creating nand return events"""
@@ -196,7 +198,9 @@ class RoadNetwork(Printable):
         # Initialise all bus stops
         for house in self.houses:
             patches += house.init_animation(ax)
-
+        
+        for cart in self.carts:
+            patches += cart.init_animation(ax)
         # List of patches for matplotlib to update
         return patches
 
@@ -213,7 +217,9 @@ class RoadNetwork(Printable):
         # Redraw buses
         for postman in self.postmen:
             patches += postman.update_animation()
-
+            
+        for cart in self.carts:
+            patches += cart.update_animation()
         # List of patches for matplotlib to update
         return patches
 

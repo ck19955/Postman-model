@@ -1,5 +1,5 @@
 import random
-from postman.objects import House, Postman, Letters, RoadNetwork
+from postman.objects import House, Postman, Letters, RoadNetwork, Cart
 import numpy as np
 
 
@@ -61,7 +61,11 @@ class LinearPostmanModel(RoadNetwork):
         if not (self.start <= new_x <= self.end):
             postman.direction = - postman.direction
             events.append(('turns', postman.name))
-
+        
+        '''
+        Postman changes direction when he has no letters and is walking wrong direction
+        '''
+        
         return events, JourneyTimes, WaitingTimes
 
     def stop_at(self, postman, house):

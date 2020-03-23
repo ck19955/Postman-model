@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-from postman.objects import Postman, House, Letters
+from postman.objects import Postman, House, Letters, Cart
 from postman.linear import LinearPostmanModel
 
 
